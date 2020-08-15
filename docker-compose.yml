@@ -1,0 +1,5 @@
+version: '3'
+services:
+  mecab:
+    #entrypoint: ["sh", "-c", "sleep 2073600"]
+    build: .
