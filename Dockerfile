@@ -40,12 +40,14 @@ RUN apk add --update --no-cache ${build_deps} \
   && echo "========= start install Neologd =========\r" \
   && git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git \
   && mecab-ipadic-neologd/bin/install-mecab-ipadic-neologd -n -y \
+  && echo " ========= finished Neologd installed =========\r" \
+
   # Clean up
   && apk del ${build_deps} \
   && rm -rf \
-    mecab-${MECAB_VERSION}* \
-    mecab-${IPADIC_VERSION}* \
+    /tmp/mecab-${MECAB_VERSION}* \
+    /tmp/mecab-${IPADIC_VERSION}* \
     mecab-ipadic-neologd \
-  && echo " ========= finished Neologd installed =========\r"
+  && echo " ========= cleaned up all directories in /tmp =========\r"
 
 CMD ["mecab", "-d", "/usr/local/lib/mecab/dic/mecab-ipadic-neologd"]
