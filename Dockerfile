@@ -12,9 +12,7 @@ ENV NEOLODG_VERSION=0.0.6
 
 RUN apk add --update --no-cache ${build_deps} \
   # Install dependencies
-
   && apk add --update --no-cache ${dependencies} \
-
   # Install MeCab
   && echo "========= start mecab install =========\r" \
   && curl -SL -o mecab-${MECAB_VERSION}.tar.gz ${mecab_url} \
@@ -25,7 +23,6 @@ RUN apk add --update --no-cache ${build_deps} \
   && make install \
   && cd \
   && echo "========= finished mecab installed =========\r" \
-
   # Install IPA dic
   && echo "========= start IPA dic install =========\r" \
   && curl -SL -o mecab-ipadic-${NEOLODG_VERSION}.tar.gz ${ipadic_url}/v${NEOLODG_VERSION} \
@@ -35,19 +32,26 @@ RUN apk add --update --no-cache ${build_deps} \
   && ./bin/install-mecab-ipadic-neologd -n -y -a \
   && cd \
   && echo "========= finished IPA dic installed =========\r" \
-
   # Install Neologd
   && echo "========= start install Neologd =========\r" \
   && git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git \
   && mecab-ipadic-neologd/bin/install-mecab-ipadic-neologd -n -y \
   && echo " ========= finished Neologd installed =========\r" \
-
   # Clean up
   && apk del ${build_deps} \
   && rm -rf \
     /tmp/mecab-${MECAB_VERSION}* \
     /tmp/mecab-${IPADIC_VERSION}* \
     mecab-ipadic-neologd \
-  && echo " ========= cleaned up all directories in /tmp =========\r"
+    /mecab-${MECAB_VERSION}.tar.gz \
+  && rm ~/mecab-ipadic-${NEOLODG_VERSION}.tar.gz \
+  && echo " ========= cleaned up all download files and directories in /tmp =========\r"
+
+  # backup run environment
+  RUN mkdir ~/mecab-backup \
+  && cp -r /usr/local/libexec/ ~/mecab-backup/ \
+  && cp -r /usr/local/lib/ ~/mecab-backup/ \
+  && cp -r /usr/local/bin/ ~/mecab-backup/ \
+  && echo " ========= finished backup directories =========\r"
 
 CMD ["mecab", "-d", "/usr/local/lib/mecab/dic/mecab-ipadic-neologd"]
